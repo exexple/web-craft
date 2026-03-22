@@ -326,8 +326,7 @@ function setupServiceModal() {
       description: document.getElementById("serviceDesc").value,
       features: document
         .getElementById("serviceFeatures")
-        .value.split("
-")
+       .split("\n")
         .filter((f) => f.trim()),
       price: document.getElementById("servicePrice").value
         ? parseFloat(document.getElementById("servicePrice").value)
@@ -360,10 +359,7 @@ async function editService(serviceId) {
     document.getElementById("serviceId").value = serviceId;
     document.getElementById("serviceName").value = data.name || "";
     document.getElementById("serviceDesc").value = data.description || "";
-    document.getElementById("serviceFeatures").value = (data.features || []).join(
-      "
-"
-    );
+    document.getElementById("serviceFeatures").value = (data.features || []).join("\n");
     document.getElementById("servicePrice").value = data.price || "";
     document.getElementById("serviceModalTitle").textContent = "Edit Service";
     document.getElementById("serviceModal").classList.remove("hidden");
@@ -553,4 +549,3 @@ function setupModalBackgroundClose() {
       if (e.target === modal) modal.classList.add("hidden");
     });
   });
-  }
