@@ -26,6 +26,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Submitting...';
 
                 // Send to Firebase (when configured)
+
+                // BOOKING
                 await addDocument('bookings', formData);
 
                 // Show success message
@@ -60,8 +62,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const formData = {
                 name: this.querySelector('input[placeholder="Your Name"]').value,
-                email: this.querySelector('input[placeholder="Email Address"]').value,
-                phone: this.querySelector('input[placeholder="Phone Number"]').value,
+                email: this.querySelector('input[placeholder="Your Email"]').value,
+                phone: this.querySelector('input[placeholder="Your Phone"]').value,
                 message: this.querySelector('textarea').value
             };
 
@@ -72,8 +74,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Sending...';
 
                 // Send to Firebase (when configured)
-                await addDocument('inquiries', formData);
 
+                // INQUIRY
+                await addDocument('inquiries', formData);
+                
                 // Show success message
                 showMessage('Thank you! We have received your inquiry and will get back to you soon.', 'success');
                 
@@ -123,6 +127,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Submitting...';
 
                 // Send to Firebase (when configured)
+
+                // REVIEW
                 await addDocument('reviews', formData);
 
                 // Show success message
