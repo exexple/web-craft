@@ -216,6 +216,22 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    const reviewBtn = document.getElementById('addReviewBtn');
+    const reviewModal = document.getElementById('reviewModal');
+    const closeReview = document.getElementById('closeReviewModal');
+
+    if (reviewBtn && reviewModal) {
+        reviewBtn.addEventListener('click', () => {
+            reviewModal.classList.remove('hidden');
+        });
+    }
+
+    if (closeReview && reviewModal) {
+        closeReview.addEventListener('click', () => {
+            reviewModal.classList.add('hidden');
+        });
+    }
+
     // ✅ LOAD EVERYTHING
     loadServices();
     loadPortfolio();
