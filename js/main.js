@@ -1,10 +1,14 @@
 // Main Script for Webcraft Studio
 
 // Mobile Menu Toggle
-document.getElementById('menuToggle').addEventListener('click', function() {
-    const mobileMenu = document.getElementById('mobileMenu');
-    mobileMenu.classList.toggle('hidden');
-});
+const menuBtn = document.getElementById('mobileMenuBtn');
+const menuPanel = document.getElementById('mobileMenuPanel');
+
+if (menuBtn && menuPanel) {
+    menuBtn.addEventListener('click', function () {
+        menuPanel.classList.toggle('hidden');
+    });
+}
 
 // Close mobile menu when link is clicked
 document.querySelectorAll('#mobileMenu a').forEach(link => {
