@@ -549,3 +549,4 @@ function setupModalBackgroundClose() {
       if (e.target === modal) modal.classList.add("hidden");
     });
   });
+}
