@@ -4,19 +4,11 @@
 let currentUser = null;
 
 // Initialize auth state listener
-auth.onAuthStateChanged(async (user) => {
+auth.onAuthStateChanged((user) => {
   if (user) {
-    // Check if user is admin in Firestore
-    const adminDoc = await db.collection('admins').doc(user.uid).get();
-    if (adminDoc.exists) {
-      currentUser = user;
-      showDashboard();
-      loadDashboardData();
-    } else {
-      auth.signOut();
-      document.getElementById('loginError').textContent = 'You are not authorized as an admin';
-      document.getElementById('loginError').classList.remove('hidden');
-    }
+    currentUser = user;
+    showDashboard();
+    loadDashboardData();
   } else {
     currentUser = null;
     showLoginPage();
