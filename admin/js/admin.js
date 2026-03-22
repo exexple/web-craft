@@ -1,376 +1,520 @@
-// Admin Panel Script
+// Firebase Admin Dashboard - Compat SDK Version
+// Uses Firebase Auth + Firestore admin verification
 
-// Modal Functions
-function openModal(modalId) {
-    document.getElementById(modalId).classList.remove('hidden');
-}
+let currentUser = null;
 
-function closeModal(modalId) {
-    document.getElementById(modalId).classList.add('hidden');
-}
-
-// Close modal when clicking outside
-document.querySelectorAll('.modal').forEach(modal => {
-    modal.addEventListener('click', function(e) {
-        if (e.target === this) {
-            this.classList.add('hidden');
-        }
-    });
+// Initialize auth state listener
+auth.onAuthStateChanged(async (user) => {
+  if (user) {
+    // Check if user is admin in Firestore
+    const adminDoc = await db.collection('admins').doc(user.uid).get();
+    if (adminDoc.exists) {
+      currentUser = user;
+      showDashboard();
+      loadDashboardData();
+    } else {
+      auth.signOut();
+      document.getElementById('loginError').textContent = 'You are not authorized as an admin';
+      document.getElementById('loginError').classList.remove('hidden');
+    }
+  } else {
+    currentUser = null;
+    showLoginPage();
+  }
 });
 
-// Demo Authentication
-const DEMO_CREDENTIALS = {
-    email: 'manas@webcraft.com',
-    password: 'admin123'
-};
-
-let isAuthenticated = false;
-
-// Login Handler
+// ========== LOGIN HANDLER ==========
 document.addEventListener('DOMContentLoaded', function() {
-    const loginForm = document.getElementById('loginForm');
-    const loginSection = document.getElementById('loginSection');
-    const adminDashboard = document.getElementById('adminDashboard');
-    const logoutBtn = document.getElementById('logoutBtn');
-
-    // Check if already logged in
-    if (localStorage.getItem('webcraft_admin_logged_in')) {
-        showDashboard();
+  const loginForm = document.getElementById('loginForm');
+  const logoutBtn = document.getElementById('logoutBtn');
+  
+  loginForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    
+    try {
+      await auth.signInWithEmailAndPassword(email, password);
+      document.getElementById('loginForm').reset();
+    } catch (error) {
+      showErrorMessage(error.message);
     }
+  });
 
-    loginForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const email = document.getElementById('adminEmail').value;
-        const password = document.getElementById('adminPassword').value;
+  logoutBtn.addEventListener('click', async function() {
+    await auth.signOut();
+  });
 
-        // Demo validation
-        if (email === DEMO_CREDENTIALS.email && password === DEMO_CREDENTIALS.password) {
-            localStorage.setItem('webcraft_admin_logged_in', 'true');
-            localStorage.setItem('admin_email', email);
-            showDashboard();
-        } else {
-            showMessage('Invalid credentials. Use demo account or configure Firebase Auth.', 'error');
-        }
-    });
-
-    logoutBtn.addEventListener('click', function() {
-        localStorage.removeItem('webcraft_admin_logged_in');
-        localStorage.removeItem('admin_email');
-        loginSection.classList.remove('hidden');
-        adminDashboard.classList.add('hidden');
-    });
-
-    function showDashboard() {
-        loginSection.classList.add('hidden');
-        adminDashboard.classList.remove('hidden');
-        setupNavigation();
-        loadDashboardData();
-    }
-
-    // Navigation Setup
-    function setupNavigation() {
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', function(e) {
-                e.preventDefault();
-                const section = this.dataset.section;
-                
-                // Update active nav item
-                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-                this.classList.add('active');
-                
-                // Show section
-                document.querySelectorAll('.section-content').forEach(sec => sec.classList.add('hidden'));
-                const targetSection = document.getElementById(`${section}-section`);
-                if (targetSection) {
-                    targetSection.classList.remove('hidden');
-                    document.getElementById('sectionTitle').textContent = 
-                        section.charAt(0).toUpperCase() + section.slice(1);
-                    
-                    // Load section data
-                    loadSectionData(section);
-                }
-            });
-        });
-    }
-
-    // Load Dashboard Data
-    async function loadDashboardData() {
-        try {
-            // Sample data - will be replaced with Firebase
-            const dashboardData = {
-                bookings: 0,
-                inquiries: 0,
-                projects: 0,
-                reviews: 0
-            };
-
-            // Update dashboard cards
-            document.querySelectorAll('[class*="fa-calendar"]')[0].parentElement.parentElement.querySelector('p:nth-child(2)').textContent = dashboardData.bookings;
-            document.querySelectorAll('[class*="fa-envelope"]')[0].parentElement.parentElement.querySelector('p:nth-child(2)').textContent = dashboardData.inquiries;
-            document.querySelectorAll('[class*="fa-briefcase"]')[0].parentElement.parentElement.querySelector('p:nth-child(2)').textContent = dashboardData.projects;
-            document.querySelectorAll('[class*="fa-star"]')[0].parentElement.parentElement.querySelector('p:nth-child(2)').textContent = dashboardData.reviews;
-        } catch (error) {
-            console.error('Error loading dashboard:', error);
-        }
-    }
-
-    // Load Section Data
-    async function loadSectionData(section) {
-        try {
-            switch(section) {
-                case 'projects':
-                    loadProjects();
-                    break;
-                case 'services':
-                    loadServices();
-                    break;
-                case 'bookings':
-                    loadBookings();
-                    break;
-                case 'inquiries':
-                    loadInquiries();
-                    break;
-                case 'reviews':
-                    loadReviews();
-                    break;
-            }
-        } catch (error) {
-            console.error('Error loading section data:', error);
-        }
-    }
-
-    // Load Projects
-    async function loadProjects() {
-        const list = document.getElementById('projectsList');
-        
-        // Sample projects
-        const projects = [
-            { id: 1, title: 'E-commerce Store', category: 'E-Commerce', description: 'Modern e-commerce website' },
-            { id: 2, title: 'Service Booking', category: 'Booking', description: 'Complete booking system' }
-        ];
-
-        list.innerHTML = projects.map(project => `
-            <div class="item-card">
-                <div class="flex justify-between items-start">
-                    <div class="flex-1">
-                        <h4 class="text-lg font-bold text-white">${project.title}</h4>
-                        <p class="text-slate-400 text-sm mb-2">${project.description}</p>
-                        <span class="inline-block px-3 py-1 bg-cyan-500/20 text-cyan-400 rounded-full text-xs font-medium">${project.category}</span>
-                    </div>
-                    <div class="flex gap-2">
-                        <button class="btn-action btn-edit" onclick="editProject(${project.id})">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn-action btn-delete" onclick="deleteProject(${project.id})">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-
-        if (projects.length === 0) {
-            list.innerHTML = '<div class="empty-state"><i class="fas fa-briefcase"></i><p>No projects yet. Add your first project!</p></div>';
-        }
-    }
-
-    // Load Services
-    async function loadServices() {
-        const list = document.getElementById('servicesList');
-        
-        // Sample services
-        const services = [
-            { id: 1, title: 'Website Design', price: '₹15,000' },
-            { id: 2, title: 'Business Website + Admin', price: '₹35,000' }
-        ];
-
-        list.innerHTML = services.map(service => `
-            <div class="item-card">
-                <div class="flex justify-between items-start">
-                    <div class="flex-1">
-                        <h4 class="text-lg font-bold text-white">${service.title}</h4>
-                        <p class="text-cyan-400 font-semibold">${service.price}</p>
-                    </div>
-                    <div class="flex gap-2">
-                        <button class="btn-action btn-edit" onclick="editService(${service.id})">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn-action btn-delete" onclick="deleteService(${service.id})">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-
-        if (services.length === 0) {
-            list.innerHTML = '<div class="empty-state"><i class="fas fa-cog"></i><p>No services yet. Add your first service!</p></div>';
-        }
-    }
-
-    // Load Bookings
-    async function loadBookings() {
-        const list = document.getElementById('bookingsList');
-        
-        // Sample bookings
-        const bookings = [];
-
-        if (bookings.length === 0) {
-            list.innerHTML = '<div class="empty-state"><i class="fas fa-calendar"></i><p>No booking requests yet.</p></div>';
-        } else {
-            list.innerHTML = bookings.map(booking => `
-                <div class="item-card">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h4 class="text-lg font-bold text-white">${booking.name}</h4>
-                            <p class="text-slate-400">${booking.businessName}</p>
-                            <p class="text-slate-400">${booking.service}</p>
-                        </div>
-                        <button class="btn-action btn-delete" onclick="deleteBooking('${booking.id}')">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-        }
-    }
-
-    // Load Inquiries
-    async function loadInquiries() {
-        const list = document.getElementById('inquiriesList');
-        
-        // Sample inquiries
-        const inquiries = [];
-
-        if (inquiries.length === 0) {
-            list.innerHTML = '<div class="empty-state"><i class="fas fa-envelope"></i><p>No inquiries yet.</p></div>';
-        } else {
-            list.innerHTML = inquiries.map(inquiry => `
-                <div class="item-card">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h4 class="text-lg font-bold text-white">${inquiry.name}</h4>
-                            <p class="text-slate-400">${inquiry.email}</p>
-                            <p class="text-slate-300 mt-2">${inquiry.message}</p>
-                        </div>
-                        <button class="btn-action btn-delete" onclick="deleteInquiry('${inquiry.id}')">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-        }
-    }
-
-    // Load Reviews
-    async function loadReviews() {
-        const list = document.getElementById('reviewsList');
-        
-        // Sample reviews
-        const reviews = [];
-
-        if (reviews.length === 0) {
-            list.innerHTML = '<div class="empty-state"><i class="fas fa-star"></i><p>No reviews yet.</p></div>';
-        } else {
-            list.innerHTML = reviews.map(review => `
-                <div class="item-card">
-                    <div class="flex justify-between items-start">
-                        <div class="flex-1">
-                            <h4 class="text-lg font-bold text-white">${review.name}</h4>
-                            <div class="text-yellow-400 mb-2">${'★'.repeat(review.rating)}${'☆'.repeat(5-review.rating)}</div>
-                            <p class="text-slate-300">"${review.message}"</p>
-                        </div>
-                        <button class="btn-action btn-delete" onclick="deleteReview('${review.id}')">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-        }
-    }
-
-    // Form Handlers
-    document.getElementById('projectForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        showMessage('Project saved successfully!', 'success');
-        closeModal('projectModal');
-        loadProjects();
-        this.reset();
-    });
-
-    document.getElementById('serviceForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        showMessage('Service saved successfully!', 'success');
-        closeModal('serviceModal');
-        loadServices();
-        this.reset();
-    });
-
-    document.getElementById('settingsForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        showMessage('Settings saved successfully!', 'success');
-    });
+  setupTabNavigation();
+  setupProjectModal();
+  setupServiceModal();
+  setupFormHandlers();
 });
 
-// Global Functions
-function editProject(id) {
-    openModal('projectModal');
+// ========== UI STATE ==========
+function showLoginPage() {
+  document.getElementById('loginPage').classList.remove('hidden');
+  document.getElementById('dashboardPage').classList.add('hidden');
 }
 
-function deleteProject(id) {
-    if (confirm('Are you sure you want to delete this project?')) {
-        showMessage('Project deleted successfully!', 'success');
+function showDashboard() {
+  document.getElementById('loginPage').classList.add('hidden');
+  document.getElementById('dashboardPage').classList.remove('hidden');
+}
+
+function showErrorMessage(message) {
+  const errorDiv = document.getElementById('loginError');
+  errorDiv.textContent = message;
+  errorDiv.classList.remove('hidden');
+  setTimeout(() => {
+    errorDiv.classList.add('hidden');
+  }, 5000);
+}
+
+// ========== TAB NAVIGATION ==========
+function setupTabNavigation() {
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const tabName = this.dataset.tab;
+      
+      // Update active button
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      
+      // Show tab content
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
+      const targetTab = document.getElementById(tabName);
+      if (targetTab) {
+        targetTab.classList.remove('hidden');
+      }
+      
+      // Load data
+      loadTabData(tabName);
+    });
+  });
+}
+
+async function loadTabData(tabName) {
+  try {
+    switch(tabName) {
+      case 'projects':
         loadProjects();
-    }
-}
-
-function editService(id) {
-    openModal('serviceModal');
-}
-
-function deleteService(id) {
-    if (confirm('Are you sure you want to delete this service?')) {
-        showMessage('Service deleted successfully!', 'success');
+        break;
+      case 'services':
         loadServices();
-    }
-}
-
-function deleteBooking(id) {
-    if (confirm('Are you sure you want to delete this booking?')) {
-        showMessage('Booking deleted!', 'success');
+        break;
+      case 'bookings':
         loadBookings();
-    }
-}
-
-function deleteInquiry(id) {
-    if (confirm('Are you sure you want to delete this inquiry?')) {
-        showMessage('Inquiry deleted!', 'success');
+        break;
+      case 'inquiries':
         loadInquiries();
-    }
-}
-
-function deleteReview(id) {
-    if (confirm('Are you sure you want to delete this review?')) {
-        showMessage('Review deleted!', 'success');
+        break;
+      case 'reviews':
         loadReviews();
+        break;
     }
+  } catch (error) {
+    console.error('Error loading tab data:', error);
+  }
 }
 
-// Show Message Function
-function showMessage(message, type) {
-    const messageDiv = document.createElement('div');
-    messageDiv.className = `${type}-message fixed top-20 left-1/2 transform -translate-x-1/2 z-50 max-w-md`;
-    messageDiv.innerHTML = `
-        <div class="bg-${type === 'success' ? 'green' : 'red'}-600 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2">
-            <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
-            <span>${message}</span>
-        </div>
-    `;
-    
-    document.body.appendChild(messageDiv);
-    
-    setTimeout(() => {
-        messageDiv.remove();
-    }, 3000);
+// ========== DASHBOARD ==========
+async function loadDashboardData() {
+  try {
+    const projectsSnap = await db.collection('projects').get();
+    const bookingsSnap = await db.collection('bookings').get();
+    const inquiriesSnap = await db.collection('inquiries').get();
+    const reviewsSnap = await db.collection('reviews').get();
+
+    document.getElementById('totalProjects').textContent = projectsSnap.size;
+    document.getElementById('totalBookings').textContent = bookingsSnap.size;
+    document.getElementById('totalInquiries').textContent = inquiriesSnap.size;
+    document.getElementById('totalReviews').textContent = reviewsSnap.size;
+
+    // Recent activity
+    const recentActivity = document.getElementById('recentActivity');
+    recentActivity.innerHTML = '<p class="text-slate-400 text-sm">Dashboard loaded successfully</p>';
+  } catch (error) {
+    console.error('Error loading dashboard:', error);
+  }
 }
+
+// ========== PROJECTS ==========
+async function loadProjects() {
+  try {
+    const snapshot = await db.collection('projects').get();
+    const projectsList = document.getElementById('projectsList');
+    
+    if (snapshot.empty) {
+      projectsList.innerHTML = '<p class="text-slate-400">No projects yet</p>';
+      return;
+    }
+
+    projectsList.innerHTML = snapshot.docs.map(doc => {
+      const data = doc.data();
+      return `
+        <div class="bg-slate-900 border border-slate-800 rounded-lg p-6 flex justify-between items-start">
+          <div class="flex-1">
+            <h4 class="text-lg font-bold text-cyan-400">${data.title || 'Untitled'}</h4>
+            <p class="text-slate-400 text-sm mt-1">${data.description || ''}</p>
+            <div class="flex gap-2 mt-3">
+              <span class="px-3 py-1 bg-purple-500/20 text-purple-300 text-xs rounded">${data.category || 'Uncategorized'}</span>
+              ${data.link ? `<a href="${data.link}" target="_blank" class="px-3 py-1 bg-cyan-500/20 text-cyan-300 text-xs rounded hover:bg-cyan-500/40 transition">View Live</a>` : ''}
+            </div>
+          </div>
+          <div class="flex gap-2 ml-4">
+            <button onclick="editProject('${doc.id}')" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 rounded transition text-sm">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button onclick="deleteProject('${doc.id}')" class="px-3 py-2 bg-red-600 hover:bg-red-700 rounded transition text-sm">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  } catch (error) {
+    console.error('Error loading projects:', error);
+  }
+}
+
+function setupProjectModal() {
+  const addBtn = document.getElementById('addProjectBtn');
+  const form = document.getElementById('projectForm');
+  
+  addBtn.addEventListener('click', () => {
+    document.getElementById('projectId').value = '';
+    document.getElementById('projectModalTitle').textContent = 'Add New Project';
+    form.reset();
+    document.getElementById('projectModal').classList.remove('hidden');
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const projectId = document.getElementById('projectId').value;
+    const data = {
+      title: document.getElementById('projectTitle').value,
+      description: document.getElementById('projectDesc').value,
+      category: document.getElementById('projectCategory').value,
+      link: document.getElementById('projectLink').value,
+      image: document.getElementById('projectImage').value,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    try {
+      if (projectId) {
+        await db.collection('projects').doc(projectId).update(data);
+      } else {
+        data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+        await db.collection('projects').add(data);
+      }
+      document.getElementById('projectModal').classList.add('hidden');
+      loadProjects();
+    } catch (error) {
+      console.error('Error saving project:', error);
+    }
+  });
+}
+
+async function editProject(projectId) {
+  try {
+    const doc = await db.collection('projects').doc(projectId).get();
+    if (doc.exists) {
+      const data = doc.data();
+      document.getElementById('projectId').value = projectId;
+      document.getElementById('projectTitle').value = data.title || '';
+      document.getElementById('projectDesc').value = data.description || '';
+      document.getElementById('projectCategory').value = data.category || '';
+      document.getElementById('projectLink').value = data.link || '';
+      document.getElementById('projectImage').value = data.image || '';
+      document.getElementById('projectModalTitle').textContent = 'Edit Project';
+      document.getElementById('projectModal').classList.remove('hidden');
+    }
+  } catch (error) {
+    console.error('Error editing project:', error);
+  }
+}
+
+async function deleteProject(projectId) {
+  if (confirm('Are you sure you want to delete this project?')) {
+    try {
+      await db.collection('projects').doc(projectId).delete();
+      loadProjects();
+    } catch (error) {
+      console.error('Error deleting project:', error);
+    }
+  }
+}
+
+// ========== SERVICES ==========
+async function loadServices() {
+  try {
+    const snapshot = await db.collection('services').get();
+    const servicesList = document.getElementById('servicesList');
+    
+    if (snapshot.empty) {
+      servicesList.innerHTML = '<p class="text-slate-400">No services yet</p>';
+      return;
+    }
+
+    servicesList.innerHTML = snapshot.docs.map(doc => {
+      const data = doc.data();
+      return `
+        <div class="bg-slate-900 border border-slate-800 rounded-lg p-6 flex justify-between items-start">
+          <div class="flex-1">
+            <h4 class="text-lg font-bold text-purple-400">${data.name || 'Untitled'}</h4>
+            <p class="text-slate-400 text-sm mt-1">${data.description || ''}</p>
+            ${data.price ? `<p class="text-cyan-400 font-bold mt-2">₹${data.price}</p>` : ''}
+          </div>
+          <div class="flex gap-2 ml-4">
+            <button onclick="editService('${doc.id}')" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 rounded transition text-sm">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button onclick="deleteService('${doc.id}')" class="px-3 py-2 bg-red-600 hover:bg-red-700 rounded transition text-sm">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  } catch (error) {
+    console.error('Error loading services:', error);
+  }
+}
+
+function setupServiceModal() {
+  const addBtn = document.getElementById('addServiceBtn');
+  const form = document.getElementById('serviceForm');
+  
+  addBtn.addEventListener('click', () => {
+    document.getElementById('serviceId').value = '';
+    document.getElementById('serviceModalTitle').textContent = 'Add New Service';
+    form.reset();
+    document.getElementById('serviceModal').classList.remove('hidden');
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const serviceId = document.getElementById('serviceId').value;
+    const data = {
+      name: document.getElementById('serviceName').value,
+      description: document.getElementById('serviceDesc').value,
+      features: document.getElementById('serviceFeatures').value.split('
+').filter(f => f.trim()),
+      price: document.getElementById('servicePrice').value ? parseFloat(document.getElementById('servicePrice').value) : null,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    try {
+      if (serviceId) {
+        await db.collection('services').doc(serviceId).update(data);
+      } else {
+        data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+        await db.collection('services').add(data);
+      }
+      document.getElementById('serviceModal').classList.add('hidden');
+      loadServices();
+    } catch (error) {
+      console.error('Error saving service:', error);
+    }
+  });
+}
+
+async function editService(serviceId) {
+  try {
+    const doc = await db.collection('services').doc(serviceId).get();
+    if (doc.exists) {
+      const data = doc.data();
+      document.getElementById('serviceId').value = serviceId;
+      document.getElementById('serviceName').value = data.name || '';
+      document.getElementById('serviceDesc').value = data.description || '';
+      document.getElementById('serviceFeatures').value = (data.features || []).join('
+');
+      document.getElementById('servicePrice').value = data.price || '';
+      document.getElementById('serviceModalTitle').textContent = 'Edit Service';
+      document.getElementById('serviceModal').classList.remove('hidden');
+    }
+  } catch (error) {
+    console.error('Error editing service:', error);
+  }
+}
+
+async function deleteService(serviceId) {
+  if (confirm('Are you sure you want to delete this service?')) {
+    try {
+      await db.collection('services').doc(serviceId).delete();
+      loadServices();
+    } catch (error) {
+      console.error('Error deleting service:', error);
+    }
+  }
+}
+
+// ========== BOOKINGS ==========
+async function loadBookings() {
+  try {
+    const snapshot = await db.collection('bookings').get();
+    const bookingsList = document.getElementById('bookingsList');
+    
+    if (snapshot.empty) {
+      bookingsList.innerHTML = '<p class="text-slate-400">No bookings yet</p>';
+      return;
+    }
+
+    bookingsList.innerHTML = snapshot.docs.map(doc => {
+      const data = doc.data();
+      return `
+        <div class="bg-slate-900 border border-slate-800 rounded-lg p-6">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <p class="text-slate-400 text-sm">Name</p>
+              <p class="font-bold">${data.name || '-'}</p>
+            </div>
+            <div>
+              <p class="text-slate-400 text-sm">Email</p>
+              <p class="font-bold">${data.email || '-'}</p>
+            </div>
+            <div>
+              <p class="text-slate-400 text-sm">Service</p>
+              <p class="font-bold">${data.service || '-'}</p>
+            </div>
+            <div>
+              <p class="text-slate-400 text-sm">Date</p>
+              <p class="font-bold">${data.date || '-'}</p>
+            </div>
+          </div>
+          <p class="text-slate-400 text-sm mt-3">Message: ${data.message || '-'}</p>
+        </div>
+      `;
+    }).join('');
+  } catch (error) {
+    console.error('Error loading bookings:', error);
+  }
+}
+
+// ========== INQUIRIES ==========
+async function loadInquiries() {
+  try {
+    const snapshot = await db.collection('inquiries').get();
+    const inquiriesList = document.getElementById('inquiriesList');
+    
+    if (snapshot.empty) {
+      inquiriesList.innerHTML = '<p class="text-slate-400">No inquiries yet</p>';
+      return;
+    }
+
+    inquiriesList.innerHTML = snapshot.docs.map(doc => {
+      const data = doc.data();
+      return `
+        <div class="bg-slate-900 border border-slate-800 rounded-lg p-6">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="text-slate-400 text-sm">From</p>
+              <p class="font-bold">${data.email || '-'}</p>
+              <p class="text-sm mt-2">${data.message || '-'}</p>
+            </div>
+            <button onclick="deleteInquiry('${doc.id}')" class="px-3 py-2 bg-red-600 hover:bg-red-700 rounded transition text-sm">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  } catch (error) {
+    console.error('Error loading inquiries:', error);
+  }
+}
+
+async function deleteInquiry(inquiryId) {
+  if (confirm('Delete this inquiry?')) {
+    try {
+      await db.collection('inquiries').doc(inquiryId).delete();
+      loadInquiries();
+    } catch (error) {
+      console.error('Error deleting inquiry:', error);
+    }
+  }
+}
+
+// ========== REVIEWS ==========
+async function loadReviews() {
+  try {
+    const snapshot = await db.collection('reviews').get();
+    const reviewsList = document.getElementById('reviewsList');
+    
+    if (snapshot.empty) {
+      reviewsList.innerHTML = '<p class="text-slate-400">No reviews yet</p>';
+      return;
+    }
+
+    reviewsList.innerHTML = snapshot.docs.map(doc => {
+      const data = doc.data();
+      const stars = '⭐'.repeat(data.rating || 0);
+      return `
+        <div class="bg-slate-900 border border-slate-800 rounded-lg p-6">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="text-slate-400 text-sm">From</p>
+              <p class="font-bold">${data.name || '-'}</p>
+              <p class="text-yellow-400 text-sm mt-1">${stars}</p>
+              <p class="text-sm mt-2 italic">"${data.message || '-'}"</p>
+            </div>
+            <button onclick="deleteReview('${doc.id}')" class="px-3 py-2 bg-red-600 hover:bg-red-700 rounded transition text-sm">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  } catch (error) {
+    console.error('Error loading reviews:', error);
+  }
+}
+
+async function deleteReview(reviewId) {
+  if (confirm('Delete this review?')) {
+    try {
+      await db.collection('reviews').doc(reviewId).delete();
+      loadReviews();
+    } catch (error) {
+      console.error('Error deleting review:', error);
+    }
+  }
+}
+
+// ========== SETTINGS ==========
+function setupFormHandlers() {
+  const saveBtn = document.getElementById('saveSettingsBtn');
+  
+  saveBtn.addEventListener('click', async () => {
+    try {
+      const settings = {
+        whatsapp: document.getElementById('settingsWhatsapp').value,
+        email: document.getElementById('settingsEmail').value,
+        location: document.getElementById('settingsLocation').value,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      // Save to Firestore settings collection
+      await db.collection('settings').doc('business').set(settings, { merge: true });
+      alert('Settings saved successfully!');
+    } catch (error) {
+      console.error('Error saving settings:', error);
+      alert('Error saving settings');
+    }
+  });
+}
+
+// Close modals when clicking outside
+document.addEventListener('DOMContentLoaded', () => {
+  ['projectModal', 'serviceModal'].forEach(modalId => {
+    const modal = document.getElementById(modalId);
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.classList.add('hidden');
+      }
+    });
+  });
+});
