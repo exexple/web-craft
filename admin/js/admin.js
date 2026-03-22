@@ -22,24 +22,26 @@ document.addEventListener("DOMContentLoaded", () => {
   const logoutBtn = document.getElementById("logoutBtn");
 
   // Login with Firebase Auth
-  loginForm.addEventListener("submit", async (e) => {
+  if (loginForm) {
+  loginForm.addEventListener('submit', async function(e) {
     e.preventDefault();
-    const email = document.getElementById("loginEmail").value;
-    const password = document.getElementById("loginPassword").value;
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
 
     try {
       await auth.signInWithEmailAndPassword(email, password);
-      loginForm.reset();
-      hideLoginError();
+      document.getElementById('loginForm').reset();
     } catch (error) {
-      showLoginError(error.message);
+      showErrorMessage(error.message);
     }
   });
+}
 
-  // Logout
-  logoutBtn.addEventListener("click", async () => {
+if (logoutBtn) {
+  logoutBtn.addEventListener('click', async function() {
     await auth.signOut();
   });
+}
 
   setupTabNavigation();
   setupProjectModal();
