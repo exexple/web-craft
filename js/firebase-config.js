@@ -5,13 +5,15 @@ import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, q
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-storage.js";
 
 // Your Firebase Configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyD2yOhm5-17kHeF2GI3C8pcKBCkX06Lhtw",
+  authDomain: "web-craft-f38cb.firebaseapp.com",
+  projectId: "web-craft-f38cb",
+  storageBucket: "web-craft-f38cb.firebasestorage.app",
+  messagingSenderId: "545761457079",
+  appId: "1:545761457079:web:4a9f911158b03622ab6e32",
+  measurementId: "G-8N6E6F07ZR"
 };
 
 // Initialize Firebase
