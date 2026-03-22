@@ -171,6 +171,11 @@ async function loadProjects() {
         return `
       <div class="bg-slate-900 border border-slate-800 rounded-lg p-6 flex justify-between items-start">
         <div class="flex-1">
+        ${data.image ? `
+  <img src="${data.image}" 
+       class="w-full h-40 object-cover rounded-lg mb-4"
+       onerror="this.src='https://via.placeholder.com/400x250'" />
+` : ""}
           <h4 class="text-lg font-bold text-cyan-400">${
             data.title || "Untitled"
           }</h4>
@@ -202,16 +207,17 @@ async function loadProjects() {
   }
 }
 
-function setupProjectModal() {
-  const addBtn = document.getElementById("addProjectBtn");
-  const form = document.getElementById("projectForm");
+addBtn.addEventListener("click", () => {
+  document.getElementById("projectId").value = "";
+  document.getElementById("projectModalTitle").textContent = "Add New Project";
+  form.reset();
 
-  addBtn.addEventListener("click", () => {
-    document.getElementById("projectId").value = "";
-    document.getElementById("projectModalTitle").textContent = "Add New Project";
-    form.reset();
-    document.getElementById("projectModal").classList.remove("hidden");
-  });
+  // 👉 ADD THIS
+  const preview = document.getElementById("projectImagePreview");
+  if (preview) preview.classList.add("hidden");
+
+  document.getElementById("projectModal").classList.remove("hidden");
+});
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -254,6 +260,11 @@ async function editProject(projectId) {
     document.getElementById("projectCategory").value = data.category || "";
     document.getElementById("projectLink").value = data.link || "";
     document.getElementById("projectImage").value = data.image || "";
+    const preview = document.getElementById("projectImagePreview");
+if (preview && data.image) {
+  preview.src = data.image;
+  preview.classList.remove("hidden");
+}
     document.getElementById("projectModalTitle").textContent = "Edit Project";
     document.getElementById("projectModal").classList.remove("hidden");
   } catch (error) {
@@ -558,3 +569,22 @@ function setupModalBackgroundClose() {
     });
   });
 }
+
+// ===== IMAGE PREVIEW (PROJECT) =====
+document.addEventListener("DOMContentLoaded", () => {
+  const input = document.getElementById("projectImage");
+  const preview = document.getElementById("projectImagePreview");
+
+  if (!input || !preview) return;
+
+  input.addEventListener("input", () => {
+    const url = input.value;
+
+    if (url && url.startsWith("http")) {
+      preview.src = url;
+      preview.classList.remove("hidden");
+    } else {
+      preview.classList.add("hidden");
+    }
+  });
+});
