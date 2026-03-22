@@ -246,7 +246,6 @@ addBtn.addEventListener("click", () => {
       console.error("Error saving project:", error);
     }
   });
-}
 
 async function editProject(projectId) {
   try {
