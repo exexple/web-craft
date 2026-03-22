@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Submitting...';
 
                 // Send to Firebase (when configured)
-                // await addDocument('bookings', formData);
+                await addDocument('bookings', formData);
 
                 // Show success message
                 showMessage('Success! Your booking request has been sent. We will contact you soon.', 'success');
@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Sending...';
 
                 // Send to Firebase (when configured)
-                // await addDocument('inquiries', formData);
+                await addDocument('inquiries', formData);
 
                 // Show success message
                 showMessage('Thank you! We have received your inquiry and will get back to you soon.', 'success');
@@ -123,7 +123,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Submitting...';
 
                 // Send to Firebase (when configured)
-                // await addDocument('reviews', formData);
+                await addDocument('reviews', formData);
 
                 // Show success message
                 showMessage('Thank you for your review! It will appear on our website shortly.', 'success');
