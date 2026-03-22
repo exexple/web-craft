@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webcraft Studio - Professional Web Design & Development</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-slate-950 text-slate-100">
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-slate-950/95 backdrop-blur border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center gap-2">
+                    <img src="images/logo.jpeg" alt="Webcraft Studio" class="h-10 w-10 rounded">
+                    <span class="text-xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">Webcraft Studio</span>
+                </div>
+                <button id="mobileMenuBtn" class="md:hidden text-cyan-400">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+                <div id="navMenu" class="hidden md:flex gap-8">
+                    <a href="#home" class="hover:text-cyan-400 transition">Home</a>
+                    <a href="#services" class="hover:text-cyan-400 transition">Services</a>
+                    <a href="#portfolio" class="hover:text-cyan-400 transition">Portfolio</a>
+                    <a href="#reviews" class="hover:text-cyan-400 transition">Reviews</a>
+                    <a href="#contact" class="hover:text-cyan-400 transition">Contact</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenuPanel" class="hidden fixed top-16 left-0 right-0 bg-slate-900 border-b border-slate-800 md:hidden z-40">
+        <div class="flex flex-col p-4 gap-4">
+            <a href="#home" class="hover:text-cyan-400 transition">Home</a>
+            <a href="#services" class="hover:text-cyan-400 transition">Services</a>
+            <a href="#portfolio" class="hover:text-cyan-400 transition">Portfolio</a>
+            <a href="#reviews" class="hover:text-cyan-400 transition">Reviews</a>
+            <a href="#contact" class="hover:text-cyan-400 transition">Contact</a>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="home" class="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center px-4">
+        <div class="max-w-4xl mx-auto text-center">
+            <h1 class="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-cyan-400 via-purple-500 to-cyan-400 bg-clip-text text-transparent">
+                We Help Local Businesses Grow
+            </h1>
+            <p class="text-xl text-slate-300 mb-8">With modern, high-performing websites that attract customers and drive results</p>
+            <p class="text-lg text-slate-400 mb-12">Founded by <span class="text-cyan-400 font-semibold">Manas</span> • Building Digital Success Stories</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="#booking" class="px-8 py-3 bg-gradient-to-r from-cyan-500 to-cyan-400 text-slate-950 font-bold rounded-lg hover:shadow-lg hover:shadow-cyan-500/50 transition transform hover:scale-105">
+                    <i class="fas fa-calendar mr-2"></i>Book a Service
+                </a>
+                <a href="#contact" class="px-8 py-3 border-2 border-purple-500 text-purple-400 font-bold rounded-lg hover:bg-purple-500/10 transition">
+                    <i class="fas fa-envelope mr-2"></i>Send Inquiry
+                </a>
+                <a href="#portfolio" class="px-8 py-3 border-2 border-cyan-500 text-cyan-400 font-bold rounded-lg hover:bg-cyan-500/10 transition">
+                    <i class="fas fa-images mr-2"></i>View Portfolio
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-20 px-4 bg-slate-900">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-4xl font-bold text-center mb-4 bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">Our Services</h2>
+            <p class="text-center text-slate-400 mb-16">Professional web solutions tailored to your business needs</p>
+            
+            <div class="grid md:grid-cols-3 gap-8" id="servicesGrid">
+                <!-- Services will be loaded from Firebase -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Projects -->
+    <section id="portfolio" class="py-20 px-4 bg-slate-950">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-4xl font-bold text-center mb-4 bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">Featured Projects</h2>
+            <p class="text-center text-slate-400 mb-8">Check out our latest work</p>
+            
+            <!-- Filter Buttons -->
+            <div class="flex flex-wrap justify-center gap-4 mb-12">
+                <button class="filter-btn px-6 py-2 bg-cyan-500/20 text-cyan-400 rounded-full hover:bg-cyan-500/40 transition active" data-filter="all">
+                    All Projects
+                </button>
+                <button class="filter-btn px-6 py-2 bg-purple-500/20 text-purple-400 rounded-full hover:bg-purple-500/40 transition" data-filter="ecommerce">
+                    E-Commerce
+                </button>
+                <button class="filter-btn px-6 py-2 bg-purple-500/20 text-purple-400 rounded-full hover:bg-purple-500/40 transition" data-filter="business">
+                    Business
+                </button>
+                <button class="filter-btn px-6 py-2 bg-purple-500/20 text-purple-400 rounded-full hover:bg-purple-500/40 transition" data-filter="portfolio">
+                    Portfolio
+                </button>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8" id="portfolioGrid">
+                <!-- Projects will be loaded from Firebase -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Reviews Section -->
+    <section id="reviews" class="py-20 px-4 bg-slate-900">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-4xl font-bold text-center mb-4 bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">Client Reviews</h2>
+            <p class="text-center text-slate-400 mb-8">What our clients say about us</p>
+            
+            <div class="grid md:grid-cols-3 gap-8 mb-12" id="reviewsGrid">
+                <!-- Reviews will be loaded from Firebase -->
+            </div>
+
+            <!-- Add Review Button -->
+            <div class="text-center">
+                <button id="addReviewBtn" class="px-8 py-3 bg-gradient-to-r from-cyan-500 to-cyan-400 text-slate-950 font-bold rounded-lg hover:shadow-lg hover:shadow-cyan-500/50 transition">
+                    <i class="fas fa-star mr-2"></i>Add Your Review
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Booking Section -->
+    <section id="booking" class="py-20 px-4 bg-slate-950">
+        <div class="max-w-2xl mx-auto">
+            <h2 class="text-4xl font-bold text-center mb-4 bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">Book a Service</h2>
+            <p class="text-center text-slate-400 mb-12">Fill in the form below and we'll get back to you soon</p>
+            
+            <form id="bookingForm" class="space-y-6 bg-slate-900 p-8 rounded-lg border border-slate-800">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <input type="text" placeholder="Your Name" required class="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg focus:border-cyan-500 focus:outline-none text-slate-100">
+                    <input type="tel" placeholder="Phone/WhatsApp" required class="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg focus:border-cyan-500 focus:outline-none text-slate-100">
+                </div>
+                <input type="text" placeholder="Business Name" required class="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg focus:border-cyan-500 focus:outline-none text-slate-100">
+                <select required class="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg focus:border-cyan-500 focus:outline-none text-slate-100">
+                    <option value="">Select Service Required</option>
+                    <option value="website-design">Website Design</option>
+                    <option value="business-website">Business Website + Admin Panel</option>
+                    <option value="booking-system">Booking System Setup</option>
+                    <option value="other">Other Services</option>
+                </select>
+                <input type="number" placeholder="Budget (Optional)" class="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg focus:border-cyan-500 focus:outline-none text-slate-100">
+                <textarea placeholder="Tell us about your project..." rows="4" required class="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg focus:border-cyan-500 focus:outline-none text-slate-100"></textarea>
+                <button type="submit" class="w-full px-8 py-3 bg-gradient-to-r from-cyan-500 to-cyan-400 text-slate-950 font-bold rounded-lg hover:shadow-lg hover:shadow-cyan-500/50 transition">
+                    <i class="fas fa-paper-plane mr-2"></i>Submit Booking
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 px-4 bg-slate-900">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-4xl font-bold text-center mb-4 bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">Get In Touch</h2>
+            <p class="text-center text-slate-400 mb-12">Have questions? Reach out to us directly</p>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="space-y-8">
+                    <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-cyan-500/20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-whatsapp text-cyan-400 text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold mb-1">WhatsApp</h3>
+                                <a href="https://wa.me/8822322905" target="_blank" class="text-cyan-400 hover:text-cyan-300">+91 8822322905</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-envelope text-purple-400 text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold mb-1">Email</h3>
+                                <a href="mailto:webcraft1130@gmail.com" class="text-purple-400 hover:text-purple-300">webcraft1130@gmail.com</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-cyan-500/20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-map-marker-alt text-cyan-400 text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold mb-1">Location</h3>
+                                <p class="text-slate-400">Guwahati, Assam, India</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Inquiry Form -->
+                <form id="inquiryForm" class="space-y-4 bg-slate-800 p-8 rounded-lg border border-slate-700">
+                    <input type="text" placeholder="Your Name" required class="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg focus:border-cyan-500 focus:outline-none text-slate-100">
+                    <input type="email" placeholder="Your Email" required class="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg focus:border-cyan-500 focus:outline-none text-slate-100">
+                    <input type="tel" placeholder="Your Phone" required class="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg focus:border-cyan-500 focus:outline-none text-slate-100">
+                    <textarea placeholder="Your Message" rows="4" required class="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg focus:border-cyan-500 focus:outline-none text-slate-100"></textarea>
+                    <button type="submit" class="w-full px-6 py-3 bg-gradient-to-r from-cyan-500 to-cyan-400 text-slate-950 font-bold rounded-lg hover:shadow-lg hover:shadow-cyan-500/50 transition">
+                        <i class="fas fa-send mr-2"></i>Send Inquiry
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 border-t border-slate-800 py-8 px-4">
+        <div class="max-w-6xl mx-auto text-center text-slate-400">
+            <p>&copy; 2026 Webcraft Studio. All rights reserved. | Founded by Manas</p>
+            <p class="mt-2">Building modern websites for modern businesses</p>
+        </div>
+    </footer>
+
+    <!-- Review Modal -->
+    <div id="reviewModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div class="bg-slate-900 rounded-lg border border-slate-800 p-8 max-w-md w-full">
+            <h3 class="text-2xl font-bold mb-6 text-cyan-400">Add Your Review</h3>
+            <form id="reviewForm" class="space-y-4">
+                <input type="text" placeholder="Your Name" required class="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg focus:border-cyan-500 focus:outline-none text-slate-100">
+                <textarea placeholder="Your Review" rows="3" required class="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg focus:border-cyan-500 focus:outline-none text-slate-100"></textarea>
+                <div class="flex gap-2">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="radio" name="rating" value="5" required> <i class="fas fa-star text-yellow-400"></i> 5 Stars
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="radio" name="rating" value="4" required> <i class="fas fa-star text-yellow-400"></i> 4 Stars
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="radio" name="rating" value="3" required> <i class="fas fa-star text-yellow-400"></i> 3 Stars
+                    </label>
+                </div>
+                <div class="flex gap-2">
+                    <button type="submit" class="flex-1 px-4 py-2 bg-cyan-500 text-slate-950 font-bold rounded-lg hover:bg-cyan-600 transition">Submit</button>
+                    <button type="button" id="closeReviewModal" class="flex-1 px-4 py-2 bg-slate-800 text-slate-100 font-bold rounded-lg hover:bg-slate-700 transition">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/firebase-config.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/forms.js"></script>
+</body>
+</html>
